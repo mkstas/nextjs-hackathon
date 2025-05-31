@@ -9,7 +9,7 @@ interface Props {
 }
 
 export const CreateTaskForm: FC<Props> = ({ onSubmit }) => {
-  const { register, handleSubmit, formState, setValue, setFocus } = useForm<Inputs>({ mode: 'onSubmit' });
+  const { register, handleSubmit, formState, setValue, setFocus } = useForm<Inputs>({ mode: 'onChange' });
 
   const onClickSubmit: SubmitHandler<Inputs> = data => {
     onSubmit(data);
@@ -28,6 +28,10 @@ export const CreateTaskForm: FC<Props> = ({ onSubmit }) => {
               value: true,
               message: 'Это поле обязательно',
             },
+            maxLength: {
+              value: 30,
+              message: 'Максимальная длина 50 символов'
+            }
           })}
           className={cn('py-1.2 w-full rounded-full border border-neutral-300 px-4 outline-none focus:ring', {
             'focus:border-accent focus:ring-accent': !formState.errors.title,

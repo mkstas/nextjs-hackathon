@@ -10,8 +10,60 @@ export const ScheduleCard: FC = () => {
 
   const [tasks, setTasks] = useState<Task[]>();
   const [filteredTasks, setFilteredTasks] = useState<Task[]>();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
-  const onClickBell = (e: MouseEvent<HTMLButtonElement>) => {};
+  const onClickBell = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsMenuOpen(!isMenuOpen);
+    setSelectedTask(null);
+  };
+
+  const handleTaskClick = (e: MouseEvent<HTMLLIElement>, task: Task) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedTask(task);
+  };
+
+  const handleDelay = (e: MouseEvent<HTMLButtonElement>, minutes: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!selectedTask) return;
+
+    const storedTasks: Task[] = JSON.parse(localStorage.getItem('tasks')!);
+    const updatedTasks = storedTasks.map(task => {
+      if (task.id === selectedTask.id) {
+        const now = new Date();
+        const [startHours, startMins] = task.startTime.split(':').map(Number);
+        const startDate = new Date(now);
+        startDate.setHours(startHours, startMins + minutes);
+        const newStartTime = `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')}`;
+
+        if (task.endTime) {
+          const [endHours, endMins] = task.endTime.split(':').map(Number);
+          const endDate = new Date(now);
+          endDate.setHours(endHours, endMins + minutes);
+          const newEndTime = `${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`;
+          return { ...task, startTime: newStartTime, endTime: newEndTime };
+        }
+
+        return { ...task, startTime: newStartTime };
+      }
+      return task;
+    });
+
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+    setTasks(updatedTasks.filter(tasks => tasks.dayId === new Date().getDay() && !tasks.isDone));
+    setSelectedTask(null);
+  };
+
+  const handleGoTo = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!selectedTask) return;
+    window.location.href = `/schedule?day=${selectedTask.dayId}`;
+  };
 
   useEffect(() => {
     const storedTasks: Task[] = JSON.parse(localStorage.getItem('tasks')!);
@@ -20,10 +72,10 @@ export const ScheduleCard: FC = () => {
       const currentTime = [new Date().getHours(), new Date().getMinutes()];
       setFilteredTasks(
         storedTasks?.filter(task => {
-          const taskTime =
-            task.dayId === new Date().getDay() && !task.isDone && task.endTime
-              ? task.endTime.split(':')
-              : task.startTime.split(':');
+          console.log(task.dayId, new Date().getDay());
+          if (task.isDone || task.dayId !== new Date().getDay()) return;
+
+          const taskTime = task.startTime.split(':');
 
           if (Number(taskTime[0]) < currentTime[0]) {
             return task;
@@ -43,12 +95,48 @@ export const ScheduleCard: FC = () => {
         <div className='flex justify-between'>
           <p className='text-xl font-semibold'>Расписание дня</p>
           {!!filteredTasks?.length && (
-            <button onClick={onClickBell} className='relative cursor-pointer p-2'>
-              <BellAlertIcon className='text-accent size-6' />
-              <span className='absolute right-1 bottom-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs leading-none text-white'>
-                {filteredTasks?.length}
-              </span>
-            </button>
+            <div className='relative'>
+              <button onClick={onClickBell} className='cursor-pointer p-2'>
+                <BellAlertIcon className='text-accent size-6' />
+                <span className='absolute right-1 bottom-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs leading-none text-white'>
+                  {filteredTasks?.length}
+                </span>
+              </button>
+              {isMenuOpen && (
+                <div className='absolute right-0 top-full mt-2 w-48 rounded-lg bg-white p-2 shadow-lg'>
+                  <ul>
+                    {filteredTasks.map((task, index) => (
+                      <li key={index} className='p-2 hover:bg-slate-100 break-all' onClick={(e) => handleTaskClick(e, task)}>
+                        {task.title} - {task.startTime}
+                        {selectedTask?.id === task.id && (
+                          <div className='absolute left-full top-0 ml-2 w-48 rounded-lg bg-white p-2 shadow-lg'>
+                            <div className='space-y-2'>
+                              <div className='flex gap-1'>
+                                <button onClick={(e) => handleDelay(e, 5)} className='rounded bg-accent w-full cursor-pointer px-2 py-1 text-xs text-white hover:bg-accent/80'>
+                                  5м
+                                </button>
+                                <button onClick={(e) => handleDelay(e, 15)} className='rounded bg-accent w-full cursor-pointer px-2 py-1 text-xs text-white hover:bg-accent/80'>
+                                  15м
+                                </button>
+                                <button onClick={(e) => handleDelay(e, 30)} className='rounded bg-accent w-full cursor-pointer px-2 py-1 text-xs text-white hover:bg-accent/80'>
+                                  30м
+                                </button>
+                                <button onClick={(e) => handleDelay(e, 60)} className='rounded bg-accent w-full cursor-pointer px-2 py-1 text-xs text-white hover:bg-accent/80'>
+                                  1ч
+                                </button>
+                              </div>
+                              <button onClick={handleGoTo} className='w-full rounded bg-slate-100 px-2 py-1 text-xs hover:bg-slate-200 cursor-pointer'>
+                                Перейти
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           )}
         </div>
         <p>{week[new Date().getDay() - 1]}</p>

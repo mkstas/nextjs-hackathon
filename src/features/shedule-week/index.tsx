@@ -14,6 +14,16 @@ export const ScheduleWeek: FC = () => {
   const [currentDay, setCurrentDay] = useState<number>(0);
   const [tasks, setTasks] = useState<Task[]>();
 
+  const isTaskExpired = (task: Task) => {
+    if (task.isDone) return false;
+    const currentTime = [new Date().getHours(), new Date().getMinutes()];
+    const taskTime = task.startTime.split(':').map(Number);
+    
+    if (taskTime[0] < currentTime[0]) return true;
+    if (taskTime[0] === currentTime[0] && taskTime[1] < currentTime[1]) return true;
+    return false;
+  };
+
   const createTask: SubmitHandler<Inputs> = data => {
     const newTask: Task = { id: Date.now(), dayId: currentDay, isDone: false, ...data };
     const storedTasks: Task[] = JSON.parse(localStorage.getItem('tasks')!);
@@ -82,7 +92,10 @@ export const ScheduleWeek: FC = () => {
                   task.dayId === currentDay && (
                     <li
                       key={index}
-                      className={cn('flex items-center gap-2', { 'text-slate-500 line-through': task.isDone })}
+                      className={cn('flex items-center gap-2', { 
+                        'text-slate-500 line-through': task.isDone,
+                        'text-red-500': !task.isDone && isTaskExpired(task)
+                      })}
                     >
                       <p className='flex-1'>{task.title}</p>
                       <div className='flex gap-1'>
