@@ -9,7 +9,9 @@ const onest = Onest({
 export default function IndexLayout({ children }: PropsWithChildren) {
   return (
     <html lang='ru' className={onest.className}>
-      <body>{children}</body>
+      <body className='bg-neutral-100'>
+        <main className='relative mx-auto max-w-4xl p-5'>{children}</main>
+      </body>
     </html>
   );
 }
