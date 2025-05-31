@@ -13,19 +13,32 @@ export const ScheduleWeek: FC = () => {
 
   const [currentDay, setCurrentDay] = useState<number>(0);
   const [tasks, setTasks] = useState<Task[]>();
-  const [currentTasks, setCurrentTasks] = useState<Task[]>();
 
   const createTask: SubmitHandler<Inputs> = data => {
-    const newTask = { day: currentDay, isDone: false, ...data };
+    const newTask: Task = { id: Date.now(), day: currentDay, times: [], isDone: false, ...data };
     const storedTasks: Task[] = JSON.parse(localStorage.getItem('tasks')!);
 
     if (!storedTasks?.length) {
       localStorage.setItem('tasks', JSON.stringify([newTask]));
-      setCurrentTasks([newTask]);
+      setTasks([newTask]);
     } else {
       localStorage.setItem('tasks', JSON.stringify([...storedTasks, newTask]));
-      setCurrentTasks([...storedTasks, newTask]);
+      setTasks([...storedTasks, newTask]);
     }
+  };
+
+  const completeTask = (id: number) => {
+    const updatedTasks = tasks?.map(task =>
+      task.id === id ? { ...task, isDone: true, times: [...task.times!, Date.now()] } : task,
+    );
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+    setTasks(updatedTasks);
+  };
+
+  const deleteTask = (id: number) => {
+    const updatedTasks = tasks?.filter(task => task.id !== id);
+    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+    setTasks(updatedTasks);
   };
 
   useEffect(() => {
@@ -34,10 +47,6 @@ export const ScheduleWeek: FC = () => {
       setTasks(JSON.parse(localStorage.getItem('tasks')!) as Task[]);
     }
   }, []);
-
-  useEffect(() => {
-    setCurrentTasks(tasks?.filter(task => task.day === currentDay));
-  }, [currentDay, tasks]);
 
   return (
     <div className='grid grid-cols-[1fr_3fr] items-start gap-2'>
@@ -65,30 +74,44 @@ export const ScheduleWeek: FC = () => {
         </div>
         <CreateTaskForm onSubmit={createTask} />
         <div>
-          {!currentTasks?.length ? (
+          {!tasks?.filter(task => task.day === currentDay).length ? (
             <p className='mt-8 mb-4 text-center'>Расписание не составлено</p>
           ) : (
             <ul className='space-y-2'>
-              {currentTasks?.map((task, index) => (
-                <li key={index} className='flex items-center gap-2'>
-                  <p className='flex-1'>{task.title}</p>
-                  <div className='flex gap-1'>
-                    <p>{task.startTime}</p>
-                    {!!task.endTime && (
-                      <>
-                        <span>-</span>
-                        <p>{task.endTime}</p>
-                      </>
-                    )}
-                  </div>
-                  <button className='bg-accent hover:bg-accent/80 cursor-pointer rounded-full p-2'>
-                    <CheckIcon className='size-4 text-white' />
-                  </button>
-                  <button className='cursor-pointer rounded-full bg-red-500 p-2 hover:bg-red-600'>
-                    <TrashIcon className='size-4 text-white' />
-                  </button>
-                </li>
-              ))}
+              {tasks?.map(
+                (task, index) =>
+                  task.day === currentDay && (
+                    <li
+                      key={index}
+                      className={cn('flex items-center gap-2', { 'text-slate-500 line-through': task.isDone })}
+                    >
+                      <p className='flex-1'>{task.title}</p>
+                      <div className='flex gap-1'>
+                        <p>{task.startTime}</p>
+                        {!!task.endTime && (
+                          <>
+                            <span>-</span>
+                            <p>{task.endTime}</p>
+                          </>
+                        )}
+                      </div>
+                      {!task.isDone && (
+                        <button
+                          onClick={() => completeTask(task.id)}
+                          className='bg-accent hover:bg-accent/80 cursor-pointer rounded-full p-2'
+                        >
+                          <CheckIcon className='size-4 text-white' />
+                        </button>
+                      )}
+                      <button
+                        onClick={() => deleteTask(task.id)}
+                        className='cursor-pointer rounded-full bg-red-500 p-2 hover:bg-red-600'
+                      >
+                        <TrashIcon className='size-4 text-white' />
+                      </button>
+                    </li>
+                  ),
+              )}
             </ul>
           )}
         </div>

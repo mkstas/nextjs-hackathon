@@ -5,6 +5,7 @@ export interface Inputs {
 }
 
 export interface Task {
+  id: number;
   day: number;
   title: string;
   startTime: string;
