@@ -7,7 +7,7 @@ export default function Index() {
       {Array(5)
         .fill(0)
         .map((_, index) => (
-          <div key={index} className='flex h-32 items-center justify-center rounded-xl bg-white p-4'>
+          <div key={index} className='flex h-40 items-center justify-center rounded-xl bg-white p-4'>
             <p>Пример виджета</p>
           </div>
         ))}
