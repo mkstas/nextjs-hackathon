@@ -6,10 +6,10 @@ export interface Inputs {
 
 export interface Task {
   id: number;
-  day: number;
+  dayId: number;
   title: string;
   startTime: string;
-  endTime?: string;
+  endTime: string;
   isDone: boolean;
-  times?: number[];
+  delayNum?: number;
 }

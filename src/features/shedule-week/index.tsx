@@ -2,11 +2,11 @@
 
 import { FC, useEffect, useState } from 'react';
 import { SubmitHandler } from 'react-hook-form';
+import Link from 'next/link';
 import { CheckIcon, ChevronLeftIcon, TrashIcon } from '@heroicons/react/24/solid';
 import { cn } from '@/shared/cn';
 import { CreateTaskForm } from './create-task-form';
 import { Inputs, Task } from './entities';
-import Link from 'next/link';
 
 export const ScheduleWeek: FC = () => {
   const week = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
@@ -15,7 +15,7 @@ export const ScheduleWeek: FC = () => {
   const [tasks, setTasks] = useState<Task[]>();
 
   const createTask: SubmitHandler<Inputs> = data => {
-    const newTask: Task = { id: Date.now(), day: currentDay, times: [], isDone: false, ...data };
+    const newTask: Task = { id: Date.now(), dayId: currentDay, isDone: false, ...data };
     const storedTasks: Task[] = JSON.parse(localStorage.getItem('tasks')!);
 
     if (!storedTasks?.length) {
@@ -28,9 +28,7 @@ export const ScheduleWeek: FC = () => {
   };
 
   const completeTask = (id: number) => {
-    const updatedTasks = tasks?.map(task =>
-      task.id === id ? { ...task, isDone: true, times: [...task.times!, Date.now()] } : task,
-    );
+    const updatedTasks = tasks?.map(task => (task.id === id ? { ...task, isDone: true } : task));
     localStorage.setItem('tasks', JSON.stringify(updatedTasks));
     setTasks(updatedTasks);
   };
@@ -43,8 +41,9 @@ export const ScheduleWeek: FC = () => {
 
   useEffect(() => {
     setCurrentDay(new Date().getDay());
-    if (!!JSON.parse(localStorage.getItem('tasks')!)) {
-      setTasks(JSON.parse(localStorage.getItem('tasks')!) as Task[]);
+    const storedData: Task[] = JSON.parse(localStorage.getItem('tasks')!);
+    if (storedData) {
+      setTasks(storedData);
     }
   }, []);
 
@@ -74,13 +73,13 @@ export const ScheduleWeek: FC = () => {
         </div>
         <CreateTaskForm onSubmit={createTask} />
         <div>
-          {!tasks?.filter(task => task.day === currentDay).length ? (
+          {!tasks?.filter(task => task.dayId === currentDay).length ? (
             <p className='mt-8 mb-4 text-center'>Расписание не составлено</p>
           ) : (
             <ul className='space-y-2'>
               {tasks?.map(
                 (task, index) =>
-                  task.day === currentDay && (
+                  task.dayId === currentDay && (
                     <li
                       key={index}
                       className={cn('flex items-center gap-2', { 'text-slate-500 line-through': task.isDone })}

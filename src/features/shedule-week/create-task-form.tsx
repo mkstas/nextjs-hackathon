@@ -36,8 +36,9 @@ export const CreateTaskForm: FC<Props> = ({ onSubmit }) => {
         />
       </div>
       <div className='flex items-center gap-1'>
-        <div className='grid h-full w-19'>
+        <div className='grid h-full'>
           <input
+            type='time'
             {...register('startTime', {
               required: {
                 value: true,
@@ -51,8 +52,9 @@ export const CreateTaskForm: FC<Props> = ({ onSubmit }) => {
           />
         </div>
         <div>-</div>
-        <div className='grid h-full w-19'>
+        <div className='grid h-full'>
           <input
+            type='time'
             {...register('endTime')}
             className={cn('py-1.2 w-full rounded-full border border-neutral-300 px-4 outline-none focus:ring', {
               'focus:border-accent focus:ring-accent': !formState.errors.endTime,
