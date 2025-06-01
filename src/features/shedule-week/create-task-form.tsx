@@ -20,7 +20,7 @@ export const CreateTaskForm: FC<Props> = ({ onSubmit }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onClickSubmit)} className='flex gap-2'>
+    <form onSubmit={handleSubmit(onClickSubmit)} className='grid gap-2 sm:grid-cols-[1fr_auto_auto]'>
       <div className='grid flex-1'>
         <input
           {...register('title', {
@@ -34,43 +34,45 @@ export const CreateTaskForm: FC<Props> = ({ onSubmit }) => {
             },
           })}
           placeholder='Событие'
-          className={cn('py-1.2 w-full rounded-full border border-neutral-300 px-4 outline-none focus:ring', {
+          className={cn('w-full rounded-full border border-neutral-300 px-4 py-1.25 outline-none focus:ring', {
             'focus:border-accent focus:ring-accent': !formState.errors.title,
             'focus:border-red-400 focus:ring-red-400': !!formState.errors.title,
           })}
         />
       </div>
-      <div className='flex items-center gap-1'>
-        <div className='grid h-full'>
-          <input
-            type='time'
-            {...register('startTime', {
-              required: {
-                value: true,
-                message: 'Это поле обязательно',
-              },
-            })}
-            className={cn('py-1.2 w-full rounded-full border border-neutral-300 px-4 outline-none focus:ring', {
-              'focus:border-accent focus:ring-accent': !formState.errors.startTime,
-              'focus:border-red-400 focus:ring-red-400': !!formState.errors.startTime,
-            })}
-          />
+      <div className='flex gap-2'>
+        <div className='flex flex-1 items-center gap-1'>
+          <div className='grid h-full flex-1'>
+            <input
+              type='time'
+              {...register('startTime', {
+                required: {
+                  value: true,
+                  message: 'Это поле обязательно',
+                },
+              })}
+              className={cn('w-full rounded-full border border-neutral-300 px-4 py-1.25 outline-none focus:ring', {
+                'focus:border-accent focus:ring-accent': !formState.errors.startTime,
+                'focus:border-red-400 focus:ring-red-400': !!formState.errors.startTime,
+              })}
+            />
+          </div>
+          <div>-</div>
+          <div className='grid h-full flex-1'>
+            <input
+              type='time'
+              {...register('endTime')}
+              className={cn('w-full rounded-full border border-neutral-300 px-4 py-1.25 outline-none focus:ring', {
+                'focus:border-accent focus:ring-accent': !formState.errors.endTime,
+                'focus:border-red-400 focus:ring-red-400': !!formState.errors.endTime,
+              })}
+            />
+          </div>
         </div>
-        <div>-</div>
-        <div className='grid h-full'>
-          <input
-            type='time'
-            {...register('endTime')}
-            className={cn('py-1.2 w-full rounded-full border border-neutral-300 px-4 outline-none focus:ring', {
-              'focus:border-accent focus:ring-accent': !formState.errors.endTime,
-              'focus:border-red-400 focus:ring-red-400': !!formState.errors.endTime,
-            })}
-          />
-        </div>
+        <button className='bg-accent hover:bg-accent/80 cursor-pointer rounded-full p-2 text-white'>
+          <PlusIcon className='size-5' />
+        </button>
       </div>
-      <button className='bg-accent hover:bg-accent/80 cursor-pointer rounded-full p-2 text-white'>
-        <PlusIcon className='size-5' />
-      </button>
     </form>
   );
 };

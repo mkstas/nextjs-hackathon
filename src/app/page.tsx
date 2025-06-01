@@ -66,7 +66,7 @@ const widgets = [
     icon: <WifiIcon className='size-8 text-blue-500' />,
     content: (
       <div className='text-center'>
-        <p className='text-2xl font-semibold'>150 Мбит/с</p>
+        <p className='text-xl font-semibold'>150 Мбит/с</p>
         <p className='text-sm text-slate-500'>Скорость загрузки</p>
         <p className='mt-2 text-xs text-slate-400'>Пинг: 15 мс</p>
       </div>
@@ -95,7 +95,7 @@ export default function Index() {
     <section className='grid grid-cols-2 gap-2 md:grid-cols-4'>
       <ScheduleCard />
       {widgets.map((widget, index) => (
-        <div key={index} className='flex h-40 flex-col rounded-xl bg-white p-4'>
+        <div key={index} className='flex flex-col rounded-xl bg-white p-4'>
           <div className='mb-2 flex items-center gap-2'>
             {widget.icon}
             <h3 className='font-semibold'>{widget.title}</h3>
