@@ -18,7 +18,7 @@ export const ScheduleWeek: FC = () => {
     if (task.isDone) return false;
     const currentTime = [new Date().getHours(), new Date().getMinutes()];
     const taskTime = task.startTime.split(':').map(Number);
-    
+
     if (taskTime[0] < currentTime[0]) return true;
     if (taskTime[0] === currentTime[0] && taskTime[1] < currentTime[1]) return true;
     return false;
@@ -49,8 +49,12 @@ export const ScheduleWeek: FC = () => {
     setTasks(updatedTasks);
   };
 
+  const getRussianDay = () => {
+    return (new Date().getDay() + 6) % 7;
+  };
+
   useEffect(() => {
-    setCurrentDay(new Date().getDay());
+    setCurrentDay(getRussianDay());
     const storedData: Task[] = JSON.parse(localStorage.getItem('tasks')!);
     if (storedData) {
       setTasks(storedData);
@@ -58,16 +62,16 @@ export const ScheduleWeek: FC = () => {
   }, []);
 
   return (
-    <div className='grid grid-cols-[1fr_3fr] items-start gap-2'>
+    <div className='grid items-start gap-2 md:grid-cols-[1fr_3fr]'>
       <ul className='space-y-1 rounded-2xl bg-white p-4'>
         {week.map((day, index) => (
           <li key={index}>
             <button
               className={cn('w-full cursor-pointer rounded-full px-4 py-1.25 text-start', {
-                'hover:bg-slate-100': currentDay !== index + 1,
-                'bg-accent text-white': currentDay === index + 1,
+                'hover:bg-slate-100': currentDay !== index,
+                'bg-accent text-white': currentDay === index,
               })}
-              onClick={() => setCurrentDay(index + 1)}
+              onClick={() => setCurrentDay(index)}
             >
               {day}
             </button>
@@ -92,9 +96,9 @@ export const ScheduleWeek: FC = () => {
                   task.dayId === currentDay && (
                     <li
                       key={index}
-                      className={cn('flex items-center gap-2', { 
+                      className={cn('flex items-center gap-2', {
                         'text-slate-500 line-through': task.isDone,
-                        'text-red-500': !task.isDone && isTaskExpired(task)
+                        'text-red-500': !task.isDone && isTaskExpired(task),
                       })}
                     >
                       <p className='flex-1'>{task.title}</p>

@@ -30,9 +30,10 @@ export const CreateTaskForm: FC<Props> = ({ onSubmit }) => {
             },
             maxLength: {
               value: 30,
-              message: 'Максимальная длина 50 символов'
-            }
+              message: 'Максимальная длина 50 символов',
+            },
           })}
+          placeholder='Событие'
           className={cn('py-1.2 w-full rounded-full border border-neutral-300 px-4 outline-none focus:ring', {
             'focus:border-accent focus:ring-accent': !formState.errors.title,
             'focus:border-red-400 focus:ring-red-400': !!formState.errors.title,
