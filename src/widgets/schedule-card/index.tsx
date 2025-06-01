@@ -190,7 +190,7 @@ export const ScheduleCard: FC = () => {
                 </span>
               </button>
               {isMenuOpen && (
-                <div className='animate-in fade-in slide-in-from-top-2 absolute top-full right-0 mt-2 w-64 rounded-lg border border-slate-100 bg-white p-2 shadow-lg duration-200'>
+                <div className='animate-in fade-in slide-in-from-top-2 absolute top-full right-0 mt-2 h-40 w-64 overflow-y-scroll rounded-lg border border-slate-100 bg-white p-2 shadow-lg duration-200'>
                   <ul className='space-y-1'>
                     {filteredTasks.map((task, index) => (
                       <li
@@ -264,42 +264,37 @@ export const ScheduleCard: FC = () => {
               />
             </div>
             <ul className='mt-3 space-y-2'>
-              {tasks.map(
-                (task, index) =>
-                  index !== 2 && (
-                    <li key={index} className='group/item flex items-center gap-2'>
-                      <div className='min-w-0 flex-1'>
-                        <p
-                          className={cn('group-hover/item:text-accent truncate text-sm transition-colors', {
-                            'text-slate-500 line-through': task.isDone,
-                            'text-accent': !task.isDone && isTaskInProgress(task),
-                          })}
-                        >
-                          {task.title}
-                        </p>
-                        <div className='flex items-center gap-1 text-xs text-slate-500'>
-                          <span>{task.startTime}</span>
-                          {!!task.endTime && (
-                            <>
-                              <span>-</span>
-                              <span>{task.endTime}</span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                      {!task.isDone && (
-                        <div className='flex-shrink-0'>
-                          <span
-                            className={cn('h-2 w-2 rounded-full transition-transform group-hover/item:scale-125', {
-                              'bg-accent': isTaskInProgress(task),
-                              'bg-slate-300': !isTaskInProgress(task),
-                            })}
-                          />
-                        </div>
-                      )}
-                    </li>
-                  ),
-              )}
+              <li className='group/item flex items-center gap-2'>
+                <div className='min-w-0 flex-1'>
+                  <p
+                    className={cn('group-hover/item:text-accent truncate text-sm transition-colors', {
+                      'text-slate-500 line-through': tasks[0].isDone,
+                      'text-accent': !tasks[0].isDone && isTaskInProgress(tasks[0]),
+                    })}
+                  >
+                    {tasks[0].title}
+                  </p>
+                  <div className='flex items-center gap-1 text-xs text-slate-500'>
+                    <span>{tasks[0].startTime}</span>
+                    {!!tasks[0].endTime && (
+                      <>
+                        <span>-</span>
+                        <span>{tasks[0].endTime}</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                {!tasks[0].isDone && (
+                  <div className='flex-shrink-0'>
+                    <span
+                      className={cn('h-2 w-2 rounded-full transition-transform group-hover/item:scale-125', {
+                        'bg-accent': isTaskInProgress(tasks[0]),
+                        'bg-slate-300': !isTaskInProgress(tasks[0]),
+                      })}
+                    />
+                  </div>
+                )}
+              </li>
             </ul>
           </div>
         ) : (
