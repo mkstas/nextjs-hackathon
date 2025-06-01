@@ -131,14 +131,15 @@ export const ScheduleCard: FC = () => {
       setFilteredTasks(
         incompleteTasks?.filter(task => {
           const taskTime = task.startTime.split(':');
+          const taskHour = Number(taskTime[0]);
+          const taskMinute = Number(taskTime[1]);
 
-          if (Number(taskTime[0]) < currentTime[0]) {
-            return task;
+          // Task is in the future
+          if (taskHour > currentTime[0] || (taskHour === currentTime[0] && taskMinute > currentTime[1])) {
+            return false;
           }
 
-          if (Number(taskTime[1]) < currentTime[1]) {
-            return task;
-          }
+          return true;
         }),
       );
     }
